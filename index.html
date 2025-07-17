@@ -9,38 +9,48 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<div class="container mt-5">
-  <h1 class="mb-4 text-center">Meine Spruchsammlung</h1>
+<div class="container py-4 bg-gradient text-white min-vh-100 d-flex flex-column align-items-center justify-content-center">
+  <div class="w-100" style="max-width: 800px;">
+    <h1 class="text-center mb-4 display-4 fw-bold">🌟 Inspirierende Sprüche 🌟</h1>
 
-  <!-- Spruch des Tages -->
-  <div class="card mb-4 shadow-sm">
-    <div class="card-header">Spruch des Tages</div>
-    <div class="card-body">
-      <blockquote id="spruch-anzeige" class="blockquote mb-0">
-        <p>Hier erscheint bald ein weiser Spruch...</p>
-      </blockquote>
-      <button id="random-spruch-btn" class="btn btn-primary mt-3">Neue Inspiration!</button>
+    <!-- Spruch des Tages -->
+    <div class="card mb-4 shadow-lg bg-light bg-gradient bg-opacity-75 rounded-3">
+      <div class="card-header text-center bg-info text-white rounded-top">
+        <h2 class="mb-0">Spruch des Tages</h2>
+      </div>
+      <div class="card-body text-center">
+        <blockquote id="spruch-anzeige" class="blockquote mb-0 fs-4 fst-italic">
+          Hier erscheint bald ein weiser Spruch...
+        </blockquote>
+        <button id="random-spruch-btn" class="btn btn-primary btn-lg mt-3 px-4 py-2 shadow-sm">
+          Neue Inspiration!
+        </button>
+      </div>
+    </div>
+
+    <!-- Neues Spruch hinzufügen -->
+    <div class="mb-4 p-4 bg-white rounded-3 shadow-sm">
+      <h2 class="h4 mb-3 text-center">Neuen Spruch hinzufügen</h2>
+      <form id="neuer-spruch-form" class="d-flex flex-column gap-3">
+        <div class="form-group mb-2">
+          <label for="spruch-input" class="form-label fw-semibold">Spruch:</label>
+          <textarea id="spruch-input" class="form-control form-control-lg" rows="3" required></textarea>
+        </div>
+        <div class="form-group mb-2 d-flex align-items-center gap-2">
+          <label for="autor-input" class="form-label fw-semibold mb-0">Autor:</label>
+          <input type="text" id="autor-input" class="form-control form-control-sm" required />
+        </div>
+        <button type="submit" class="btn btn-success btn-lg mx-auto px-4 py-2 shadow-sm">Speichern</button>
+        <p class="text-end text-muted mb-0"><small id="zeichen-zaehler">Zeichen: 0</small></p>
+      </form>
+    </div>
+
+    <!-- Alle Sprüche -->
+    <div class="mt-4">
+      <h2 class="h5 mb-3 text-center">Alle Sprüche</h2>
+      <ul id="spruch-liste" class="list-group"></ul>
     </div>
   </div>
-
-  <!-- Neues Spruch hinzufügen -->
-  <h2>Neuen Spruch hinzufügen</h2>
-  <form id="neuer-spruch-form" class="mb-4 p-4 border rounded">
-    <div class="mb-3">
-      <label for="spruch-input" class="form-label">Spruch:</label>
-      <textarea id="spruch-input" class="form-control" required></textarea>
-    </div>
-    <div class="mb-3">
-      <label for="autor-input" class="form-label">Autor:</label>
-      <input type="text" id="autor-input" class="form-control" required />
-    </div>
-    <button type="submit" class="btn btn-success">Speichern</button>
-  </form>
-
-  <!-- Alle Sprüche -->
-  <hr>
-  <h2>Alle Sprüche</h2>
-  <ul id="spruch-liste" class="list-group"></ul>
 </div>
 
 <!-- JavaScript -->

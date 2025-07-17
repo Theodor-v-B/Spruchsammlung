@@ -1,80 +1,80 @@
-// Array für Sprüche, beim Laden aus LocalStorage holen
-let sprueche = [];
-const gespeicherteSprues = localStorage.getItem('sprueche');
-if (gespeicherteSprues) {
-  sprueche = JSON.parse(gespeicherteSprues);
+// Beim Laden aus LocalStorage holen, falls vorhanden
+const gespeicherteSprüche = localStorage.getItem('sprueche');
+if (gespeicherteSprüche) {
+    sprueche = JSON.parse(gespeicherteSprüche);
 }
 
-// Referenzen zu Elementen
+// Elemente aus dem HTML greifen
 const spruchAnzeige = document.getElementById('spruch-anzeige');
-const btnZufaellig = document.getElementById('random-spruch-btn');
-const listeContainer = document.getElementById('spruch-liste');
-const formular = document.getElementById('neuer-spruch-form');
-const inputSpruch = document.getElementById('spruch-input');
-const inputAutor = document.getElementById('autor-input');
+const randomSpruchBtn = document.getElementById('random-spruch-btn');
+const neuesSpruchForm = document.getElementById('neuer-spruch-form');
+const spruchInput = document.getElementById('spruch-input');
+const autorInput = document.getElementById('autor-input');
+const spruchListe = document.getElementById('spruch-liste');
+const zeichenZaehler = document.getElementById('zeichen-zaehler');
 
-// Funktion: Zufällig einen Spruch anzeigen
-function zeigeZufaelligenSpruch() {
-  if (sprueche.length === 0) {
-    spruchAnzeige.innerHTML = "<p>Kein Spruch vorhanden.</p>";
-    return;
-  }
-  const index = Math.floor(Math.random() * sprueche.length);
-  const s = sprueche[index];
-  spruchAnzeige.innerHTML = `<p>"${s.spruch}"</p><footer class="blockquote-footer">${s.autor}</footer>`;
-}
-
-// Funktion: Alle Sprüche in der Liste anzeigen
-function aktualisiereListe() {
-  listeContainer.innerHTML = "";
-  sprueche.forEach((s, i) => {
-    const li = document.createElement('li');
-    li.className = "list-group-item d-flex justify-content-between align-items-center";
-    li.innerHTML = `"${s.spruch}" <br><small class="text-muted">- ${s.autor}</small>`;
-    
-    // Löschen-Button
-    const btnLöschen = document.createElement('button');
-    btnLöschen.className = "btn btn-sm btn-danger";
-    btnLöschen.textContent = "Löschen";
-    btnLöschen.onclick = () => {
-      sprueche.splice(i, 1);
-      aktualisiereListe();
-      zeigeZufaelligenSpruch();
-
-      // Aktualisiere LocalStorage nach Löschen
-      localStorage.setItem('sprueche', JSON.stringify(sprueche));
-    };
-
-    li.appendChild(btnLöschen);
-    listeContainer.appendChild(li);
-  });
-}
-
-// Event: Button für Zufallsspruch
-btnZufaellig.addEventListener('click', () => {
-  zeigeZufaelligenSpruch();
+// Zeichen-Zähler bei Eingabe
+spruchInput.addEventListener('input', () => {
+    const zeichenzahl = spruchInput.value.length;
+    zeichenZaehler.textContent = `Zeichen: ${zeichenzahl}`;
 });
 
-// Event: Formular zum Hinzufügen
-formular.addEventListener('submit', (e) => {
-  e.preventDefault();
+// Funktion: Sprüche anzeigen
+function renderSprueche() {
+    spruchListe.innerHTML = '';
+    sprueche.forEach((spruch, index) => {
+        const li = document.createElement('li');
+        li.className = 'list-group-item d-flex justify-content-between align-items-center flex-wrap';
 
-  const spruchText = inputSpruch.value.trim();
-  const autorText = inputAutor.value.trim();
+        // Inhalt
+        li.innerHTML = `
+            <div>
+                <p class="mb-1">"${spruch.text}"</p>
+                <small class="text-muted fst-italic">- ${spruch.autor}</small>
+            </div>
+        `;
 
-  if (spruchText && autorText) {
-    sprueche.push({ spruch: spruchText, autor: autorText });
-    // Formular zurücksetzen
-    inputSpruch.value = '';
-    inputAutor.value = '';
+        // Löschen-Button
+        const btnLöschen = document.createElement('button');
+        btnLöschen.className = 'btn btn-sm btn-danger ms-2';
+        btnLöschen.textContent = 'Löschen';
+        btnLöschen.onclick = () => {
+            sprueche.splice(index, 1);
+            localStorage.setItem('sprueche', JSON.stringify(sprueche));
+            renderSprueche();
+            zeigeZufaelligenSpruch();
+        };
 
-    // Liste aktualisieren
-    aktualisiereListe();
+        li.appendChild(btnLöschen);
+        spruchListe.appendChild(li);
+    });
+}
 
-    // Spruch des Tages aktualisieren
-    zeigeZufaelligenSpruch();
-
-    // Aktualisiere LocalStorage nach neuem Spruch
-    localStorage.setItem('sprueche', JSON.stringify(sprueche));
-  }
+// Zufalls-Spruch
+randomSpruchBtn.addEventListener('click', () => {
+    if (sprueche.length === 0) return;
+    const index = Math.floor(Math.random() * sprueche.length);
+    const spruch = sprueche[index];
+    spruchAnzeige.innerHTML = `
+        <p>"${spruch.text}"</p>
+        <footer class="blockquote-footer">${spruch.autor}</footer>
+    `;
 });
+
+// Formular für neuen Spruch
+neuesSpruchForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const text = spruchInput.value.trim();
+    const autor = autorInput.value.trim();
+    if (text && autor) {
+        sprueche.push({ text, autor });
+        localStorage.setItem('sprueche', JSON.stringify(sprueche));
+        renderSprueche();
+        neuesSpruchForm.reset();
+        zeichenZaehler.textContent = 'Zeichen: 0';
+        zeigeZufaelligenSpruch();
+    }
+});
+
+// Beim Laden die Liste initialisieren
+renderSprueche();
