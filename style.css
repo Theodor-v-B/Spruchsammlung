@@ -1,0 +1,106 @@
+/* Allgemeine Schrift und Hintergrund */
+body {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  background-color: #fafafa;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* Headings & Titel */
+h1, h2 {
+  font-family: 'Georgia', serif;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+/* Spruch des Tages Card */
+.card {
+  background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+}
+
+/* Spruch-Text im "Spruch des Tages" */
+#spruch-anzeige p {
+  font-size: 1.5rem;
+  font-style: italic;
+  color: #34495e;
+}
+
+/* Button-Design */
+button {
+  padding: 10px 20px;
+  border-radius: 25px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+/* Farben für Buttons, passend zum Thema */
+#random-spruch-btn {
+  background-color: #ff7f50;
+  color: #fff;
+}
+#random-spruch-btn:hover {
+  background-color: #ff6347;
+}
+
+/* Formularbereich */
+form {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Input & Textarea Stil */
+input[type="text"],
+textarea {
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  padding: 10px;
+  width: 100%;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+input[type="text"]:focus,
+textarea:focus {
+  border-color: #3498db;
+  outline: none;
+}
+
+/* Sprüche Liste Styling */
+#spruch-liste {
+  max-height: 300px;
+  overflow-y: auto;
+}
+#spruch-liste li {
+  background-color: #ffffffcc; /* halbtransparent */
+  border-left: 5px solid #3498db;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  transition: background-color 0.3s;
+}
+#spruch-liste li:hover {
+  background-color: #e0f7fa;
+}
+
+/* Footer & allgemeines */
+footer {
+  font-size: 0.9rem;
+  color: #999;
+  text-align: center;
+  margin-top: 30px;
+}
