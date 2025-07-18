@@ -1,6 +1,6 @@
 const apiBaseUrl = 'http://localhost:3000/api/sprueche';
 
-// Elemente aus dem DOM holen
+// DOM-Elemente holen
 const spruchAnzeige = document.getElementById('spruch-anzeige');
 const btnZufall = document.getElementById('random-spruch-btn');
 const formular = document.getElementById('neuer-spruch-form');
@@ -9,26 +9,29 @@ const autorInput = document.getElementById('autor-input');
 const zeichenZaehler = document.getElementById('zeichen-zaehler');
 const spruchListe = document.getElementById('spruch-liste');
 
-let sprueche = []; // Daten werden vom Server geladen
+let sprueche = [];
 
-// Zeichen-Zähler bei Eingabe aktualisieren
+// Zeichen zählen bei Eingabe
 spruchInput.addEventListener('input', () => {
   zeichenZaehler.textContent = `Zeichen: ${spruchInput.value.length}`;
 });
 
-// Funktion: Alle Sprüche vom Server laden
+// API: Alle Sprüche laden
 async function fetchSprüche() {
-  const response = await fetch(apiBaseUrl);
-  if (response.ok) {
-    const spruecheVonServer = await response.json();
-    sprueche = spruecheVonServer;
-    renderSprueche();
-  } else {
-    console.error('Fehler beim Laden der Sprüche');
+  try {
+    const response = await fetch('http://localhost:3000/api/sprueche');
+    if (response.ok) {
+      sprueche = await response.json();
+      renderSprueche();
+    } else {
+      console.error('Fehler beim Laden der Sprüche:', response.status);
+    }
+  } catch (err) {
+    console.error('Netzwerkfehler beim Laden:', err);
   }
 }
 
-// Funktion: Alle Sprüche im DOM anzeigen
+// Alle Sprüche im DOM anzeigen
 function renderSprueche() {
   spruchListe.innerHTML = '';
   sprueche.forEach(s => {
@@ -42,66 +45,73 @@ function renderSprueche() {
       </div>
     `;
 
-    // Löschen-Button
+    // Löschen Button
     const btnLöschen = document.createElement('button');
     btnLöschen.className = 'btn btn-sm btn-danger ms-3';
     btnLöschen.textContent = 'Löschen';
-    btnLöschen.onclick = () => {
-      deleteSpruch(s.id);
-    };
+    btnLöschen.onclick = () => deleteSpruch(s.id);
 
     li.appendChild(btnLöschen);
     spruchListe.appendChild(li);
   });
 }
 
-// Funktion: Zufälligen Spruch anzeigen
-function zeigeZufaellenSpruch() {
-  if (sprueche.length === 0) {
-    spruchAnzeige.innerHTML = "<p>Kein Spruch vorhanden.</p>";
-    return;
-  }
-  const index = Math.floor(Math.random() * sprueche.length);
-  const spruch = sprueche[index];
-  spruchAnzeige.innerHTML = `
-    <p>"${spruch.spruch}"</p>
-    <footer class="blockquote-footer">${spruch.autor}</footer>
-  `;
-}
-
-// Funktion: Neuen Spruch auf Server speichern
-async function saveSpruch(spruchObjekt) {
-  const response = await fetch(apiBaseUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(spruchObjekt)
-  });
-  if (response.ok) {
-    const neuerSpruch = await response.json();
-    sprueche.push(neuerSpruch);
-    renderSprueche();
-  } else {
-    console.error('Fehler beim Speichern des Spruchs');
+// Zufälligen Spruch holen (Bonus)
+async function fetchRandomSpruch() {
+  try {
+    const response = await fetch('http://localhost:3000/api/sprueche/random');
+    if (response.ok) {
+      const spruch = await response.json();
+      // "Spruch des Tages" aktualisieren
+      spruchAnzeige.innerHTML = `
+        <p>"${spruch.spruch}"</p>
+        <footer class="blockquote-footer">${spruch.autor}</footer>
+      `;
+    }
+  } catch (err) {
+    console.error('Fehler beim Laden des Zufalls-Spruchs:', err);
   }
 }
 
-// Funktion: Spruch löschen auf Server
+// Neue Sprüche auf Server speichern
+async function saveSpruch(spruch) {
+  try {
+    const response = await fetch('http://localhost:3000/api/sprueche', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(spruch),
+    });
+    if (response.ok) {
+      const neuerSpruch = await response.json();
+      sprueche.push(neuerSpruch);
+      renderSprueche();
+    } else {
+      console.error('Fehler beim Speichern:', response.status);
+    }
+  } catch (err) {
+    console.error('Netzwerkfehler beim Speichern:', err);
+  }
+}
+
+// Spruch löschen
 async function deleteSpruch(id) {
-  const response = await fetch(`${apiBaseUrl}/${id}`, {
-    method: 'DELETE'
-  });
-  if (response.ok) {
-    // Locales Array aktualisieren
-    sprueche = sprueche.filter(s => s.id !== id);
-    renderSprueche();
-  } else {
-    console.error('Fehler beim Löschen des Spruchs');
+  try {
+    const response = await fetch(`http://localhost:3000/api/sprueche/${id}`, { method: 'DELETE' });
+    if (response.ok) {
+      // Im lokalen Array entfernen
+      sprueche = sprueche.filter(s => s.id !== id);
+      renderSprueche();
+    } else {
+      console.error('Fehler beim Löschen:', response.status);
+    }
+  } catch (err) {
+    console.error('Netzwerkfehler beim Löschen:', err);
   }
 }
 
-// Event: Zufall-Button
+// Event: Zufallsspruch anzeigen
 btnZufall.addEventListener('click', () => {
-  zeigeZufaellenSpruch();
+  fetchRandomSpruch();
 });
 
 // Event: Formular zum Hinzufügen
@@ -114,8 +124,10 @@ formular.addEventListener('submit', (e) => {
     saveSpruch({ spruch: text, autor: autor });
     formular.reset();
     zeichenZaehler.textContent = 'Zeichen: 0';
+    // Optional: direkt den Spruch vom Tag aktualisieren
+    // fetchRandomSpruch();
   }
 });
 
-// Seite beim Start laden
+// Bei Seitenstart alle Sprüche laden
 fetchSprüche();
